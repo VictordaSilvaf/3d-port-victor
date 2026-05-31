@@ -13,6 +13,8 @@ import { SceneExperienceView } from "./scene-experience.view"
 import { SceneKeyboardMovementView } from "./scene-keyboard-movement.view"
 import { SceneColliderDebugView } from "./scene-collider-debug.view"
 import { SceneFpsControllerView } from "./scene-fps-controller.view"
+import { SceneTouchLookZoneView } from "./scene-touch-look-zone.view"
+import { SceneVirtualJoystickView } from "./scene-virtual-joystick.view"
 import { SceneViewportHostView } from "./scene-viewport-host.view"
 
 type SceneCanvasViewProps = {
@@ -31,6 +33,8 @@ export function SceneCanvasView({ scene }: SceneCanvasViewProps) {
       domElement={viewport ?? undefined}
     >
       <SceneViewportHostView>
+        <SceneTouchLookZoneView />
+        <SceneVirtualJoystickView />
         <SceneControlPanelView />
         <SceneCrosshairView />
         <Canvas

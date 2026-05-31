@@ -10,7 +10,10 @@ import {
 import {
   getMovementInput,
   idleMovementInput,
+  mergeMovementInput,
 } from "@/lib/scene/movement-input"
+import { getTouchMovementInput } from "@/lib/scene/touch-movement"
+import { SCENE_MODEL } from "@/models/scene/scene.model"
 import {
   applyMouseDelta,
   lookInput,
@@ -66,12 +69,18 @@ export function SceneFpsControllerView() {
       return
     }
 
-    const { lookSensitivity } = useSceneControlsStore.getState()
-    applyMouseDelta(lookSensitivity)
+    const { lookSensitivity, isMobileLayout } = useSceneControlsStore.getState()
+    const sensitivity = isMobileLayout
+      ? SCENE_MODEL.look.touchSensitivity
+      : lookSensitivity
+    applyMouseDelta(sensitivity)
 
     const keys = isTypingInFormField()
       ? idleMovementInput
-      : getMovementInput(getKeys)
+      : mergeMovementInput(
+          getMovementInput(getKeys),
+          getTouchMovementInput()
+        )
 
     updateFpsLocomotion(camera, keys, lookInput.yaw, lookInput.pitch, delta)
 

@@ -31,6 +31,12 @@ export function SceneViewportHostView({ children }: SceneViewportHostViewProps) 
   )
   const controlMode = useSceneControlsStore((state) => state.controlMode)
   const lookEnabled = useSceneControlsStore((state) => state.lookEnabled)
+  const isMobileLayoutActive = useSceneControlsStore(
+    (state) => state.isMobileLayout
+  )
+  const applyDeviceDefaults = useSceneControlsStore(
+    (state) => state.applyDeviceDefaults
+  )
   const requestPointerLock = useSceneControlsStore(
     (state) => state.requestPointerLock
   )
@@ -38,6 +44,24 @@ export function SceneViewportHostView({ children }: SceneViewportHostViewProps) 
     (state) => state.toggleControlMode
   )
   const exitPointerLock = useSceneControlsStore((state) => state.exitPointerLock)
+
+  useEffect(() => {
+    applyDeviceDefaults()
+
+    const coarseQuery = window.matchMedia("(pointer: coarse)")
+    const narrowQuery = window.matchMedia("(max-width: 768px)")
+    const handleLayoutChange = () => {
+      applyDeviceDefaults()
+    }
+
+    coarseQuery.addEventListener("change", handleLayoutChange)
+    narrowQuery.addEventListener("change", handleLayoutChange)
+
+    return () => {
+      coarseQuery.removeEventListener("change", handleLayoutChange)
+      narrowQuery.removeEventListener("change", handleLayoutChange)
+    }
+  }, [applyDeviceDefaults])
 
   useEffect(() => {
     const handlePointerLockChange = () => {
@@ -102,11 +126,20 @@ export function SceneViewportHostView({ children }: SceneViewportHostViewProps) 
       onPointerDown={(event) => {
         event.currentTarget.focus()
 
-        if (controlMode === "look" && lookEnabled) {
+        if (
+          controlMode === "look" &&
+          lookEnabled &&
+          !isMobileLayoutActive &&
+          event.pointerType === "mouse"
+        ) {
           requestPointerLock()
         }
       }}
-      aria-label="Cenário 3D. Modo olhar: clique para capturar o mouse. L alterna modos."
+      aria-label={
+        isMobileLayoutActive
+          ? "Cenário 3D. Joystick central para mover, arraste fora dele para olhar."
+          : "Cenário 3D. Modo olhar: clique para capturar o mouse. L alterna modos."
+      }
     >
       {children}
     </div>

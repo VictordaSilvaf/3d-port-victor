@@ -21,3 +21,15 @@ export const idleMovementInput: MovementInput = {
   left: false,
   right: false,
 }
+
+export function mergeMovementInput(...inputs: MovementInput[]): MovementInput {
+  return inputs.reduce<MovementInput>(
+    (merged, input) => ({
+      forward: merged.forward || input.forward,
+      backward: merged.backward || input.backward,
+      left: merged.left || input.left,
+      right: merged.right || input.right,
+    }),
+    idleMovementInput
+  )
+}

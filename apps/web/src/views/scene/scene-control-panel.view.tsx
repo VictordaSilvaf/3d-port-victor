@@ -8,6 +8,7 @@ export function SceneControlPanelView() {
   const lookEnabled = useSceneControlsStore((state) => state.lookEnabled)
   const orbitEnabled = useSceneControlsStore((state) => state.orbitEnabled)
   const pointerLocked = useSceneControlsStore((state) => state.pointerLocked)
+  const isMobileLayout = useSceneControlsStore((state) => state.isMobileLayout)
 
   const setControlMode = useSceneControlsStore((state) => state.setControlMode)
   const toggleCrosshair = useSceneControlsStore((state) => state.toggleCrosshair)
@@ -30,8 +31,8 @@ export function SceneControlPanelView() {
   }
 
   return (
-    <div className="pointer-events-auto absolute top-4 right-4 z-30 flex max-w-xs flex-col gap-2 sm:right-auto sm:left-1/2 sm:-translate-x-1/2">
-      <div className="bg-background/85 supports-[backdrop-filter]:bg-background/60 flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border border-border p-2 shadow-lg backdrop-blur-md">
+    <div className="pointer-events-auto absolute top-3 right-3 z-30 flex max-w-[min(100%,20rem)] flex-col gap-1.5 pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] sm:top-4 sm:right-4 sm:max-w-xs sm:gap-2 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 sm:pt-0 sm:pr-0">
+      <div className="bg-background/85 supports-[backdrop-filter]:bg-background/60 flex flex-wrap items-center justify-center gap-1 rounded-xl border border-border p-1.5 shadow-lg backdrop-blur-md sm:gap-1.5 sm:rounded-2xl sm:p-2">
         <ModeButton
           active={controlMode === "orbit" && orbitEnabled}
           label="Órbita"
@@ -48,7 +49,7 @@ export function SceneControlPanelView() {
           onClick={toggleCrosshair}
           disabled={controlMode !== "look"}
         />
-        {controlMode === "look" ? (
+        {controlMode === "look" && !isMobileLayout ? (
           <ModeButton
             active={pointerLocked}
             label={pointerLocked ? "Liberar mouse" : "Capturar mouse"}
@@ -56,10 +57,14 @@ export function SceneControlPanelView() {
           />
         ) : null}
       </div>
-      <p className="text-muted-foreground bg-background/70 rounded-lg px-2 py-1 text-center text-[10px] backdrop-blur-sm">
-        {controlMode === "look"
-          ? "Clique na cena ou Capturar mouse · WASD move · Esc libera · L alterna"
-          : "Arraste (esq.) orbitar · Scroll zoom · WASD move · L = modo olhar"}
+      <p className="text-muted-foreground bg-background/70 rounded-lg px-2 py-1 text-center text-[10px] leading-snug backdrop-blur-sm">
+        {isMobileLayout
+          ? controlMode === "look"
+            ? "Joystick no centro move · arraste fora dele para olhar"
+            : "Dois dedos: pinça zoom · arraste orbitar"
+          : controlMode === "look"
+            ? "Clique na cena ou Capturar mouse · WASD move · Esc libera · L alterna"
+            : "Arraste (esq.) orbitar · Scroll zoom · WASD move · L = modo olhar"}
       </p>
     </div>
   )

@@ -78,8 +78,13 @@ export const SCENE_MODEL = {
   },
   look: {
     sensitivity: 0.003,
+    touchSensitivity: 0.008,
     minPolarDeg: -85,
     maxPolarDeg: 85,
+  },
+  touch: {
+    joystickRadius: 52,
+    joystickDeadZone: 0.12,
   },
   collision: {
     radius: 0.36,
