@@ -6,7 +6,7 @@ Monorepo Vite + React com design system compartilhado (`@workspace/ui`).
 
 | App | Pasta | Porta | Função |
 |-----|-------|-------|--------|
-| **web** | `apps/web` | 5173 | Portfólio 3D / site público |
+| **web** | `apps/web` | 5173 | Portfólio 3D (R3F, Drei, GSAP, Leva, Zustand) |
 | **docs** | `apps/docs` | 5174 | Documentação do projeto |
 | **admin** | `apps/admin` | 5175 | Painel interno |
 
@@ -53,6 +53,17 @@ Page → useXViewModel() → View → @workspace/ui
 npm run dev
 npm run build
 npm run typecheck
+```
+
+## Stack 3D (`apps/web`)
+
+- **three** + **@react-three/fiber** + **@react-three/drei** — cena WebGL
+- **zustand** — estado da cena (`src/stores/scene/`)
+- **gsap** — animação de entrada do mesh
+- **leva** — controles em dev (`SceneDevToolsView`)
+
+```bash
+npm run dev -- --filter=web
 ```
 
 ## Importando componentes

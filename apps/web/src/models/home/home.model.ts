@@ -1,10 +1,10 @@
 export const HOME_MODEL = {
-  title: "Project ready!",
+  title: "Victor — Portfólio 3D",
   paragraphs: [
-    "You may now add components and start building.",
-    "We've already added the button component for you.",
+    "Cena inicial com React Three Fiber, Drei, GSAP, Leva e Zustand.",
+    "Arraste para orbitar. Em dev, use o painel Leva para ajustar a cena.",
   ],
-  buttonLabel: "Button",
+  buttonLabel: "Ver projetos",
   keyboardHint: {
     before: "(Press",
     keys: ["d"],

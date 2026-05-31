@@ -6,6 +6,16 @@ import { defineConfig } from "vite"
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: [
+      "three",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "gsap",
+      "leva",
+      "zustand",
+    ],
+  },
   server: {
     port: 5173,
     strictPort: true,
