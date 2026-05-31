@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/providers/theme/theme.provider"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
+    <ThemeProvider storageKey="theme-admin">
       <App />
     </ThemeProvider>
   </StrictMode>
