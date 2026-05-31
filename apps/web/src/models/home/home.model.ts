@@ -1,14 +1,13 @@
 export const HOME_MODEL = {
   title: "Victor — Portfólio 3D",
   paragraphs: [
-    "Cena inicial com React Three Fiber, Drei, GSAP, Leva e Zustand.",
-    "Arraste para orbitar. Em dev, use o painel Leva para ajustar a cena.",
+    "Modo Órbita ou Olhar (FPS). Mira central, mouse capturado no modo olhar. WASD para mover.",
   ],
   buttonLabel: "Ver projetos",
   keyboardHint: {
-    before: "(Press",
+    before: "L alterna modo. Tema:",
     keys: ["d"],
-    after: "to toggle dark mode)",
+    after: "",
   },
 } as const
 

@@ -7,15 +7,14 @@ import {
 } from "@/models/scene/scene.model"
 
 type SceneState = SceneDefaults & {
+  setModelScale: (modelScale: number) => void
+  setPosition: (position: readonly [number, number, number]) => void
   setRotationSpeed: (rotationSpeed: number) => void
-  setDistort: (distort: number) => void
-  setRadius: (radius: number) => void
-  setColor: (color: string) => void
-  setMetalness: (metalness: number) => void
-  setRoughness: (roughness: number) => void
   setAutoRotate: (autoRotate: boolean) => void
-  setShowGrid: (showGrid: boolean) => void
+  setUseEnvironment: (useEnvironment: boolean) => void
   setEnvironmentPreset: (environmentPreset: SceneEnvironmentPreset) => void
+  setAmbientIntensity: (ambientIntensity: number) => void
+  setDirectionalIntensity: (directionalIntensity: number) => void
   reset: () => void
 }
 
@@ -23,14 +22,14 @@ const initialState = SCENE_MODEL.defaults
 
 export const useSceneStore = create<SceneState>((set) => ({
   ...initialState,
+  setModelScale: (modelScale) => set({ modelScale }),
+  setPosition: (position) => set({ position }),
   setRotationSpeed: (rotationSpeed) => set({ rotationSpeed }),
-  setDistort: (distort) => set({ distort }),
-  setRadius: (radius) => set({ radius }),
-  setColor: (color) => set({ color }),
-  setMetalness: (metalness) => set({ metalness }),
-  setRoughness: (roughness) => set({ roughness }),
   setAutoRotate: (autoRotate) => set({ autoRotate }),
-  setShowGrid: (showGrid) => set({ showGrid }),
+  setUseEnvironment: (useEnvironment) => set({ useEnvironment }),
   setEnvironmentPreset: (environmentPreset) => set({ environmentPreset }),
+  setAmbientIntensity: (ambientIntensity) => set({ ambientIntensity }),
+  setDirectionalIntensity: (directionalIntensity) =>
+    set({ directionalIntensity }),
   reset: () => set(initialState),
 }))

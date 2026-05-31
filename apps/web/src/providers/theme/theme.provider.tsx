@@ -126,6 +126,12 @@ export function ThemeProvider({
         return
       }
 
+      const activeInViewport =
+        document.activeElement?.closest("[data-scene-viewport]")
+      if (activeInViewport) {
+        return
+      }
+
       setThemeState((currentTheme) => {
         const nextTheme = getNextTheme(currentTheme)
         localStorage.setItem(storageKey, nextTheme)

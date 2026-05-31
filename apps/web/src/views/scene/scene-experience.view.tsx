@@ -1,106 +1,127 @@
-import { useFrame } from "@react-three/fiber"
 import {
+  ContactShadows,
   Environment,
-  Float,
-  Grid,
-  MeshDistortMaterial,
   OrbitControls,
   PerspectiveCamera,
 } from "@react-three/drei"
-import gsap from "gsap"
-import { useLayoutEffect, useRef } from "react"
-import type { Mesh } from "three"
+import { useThree } from "@react-three/fiber"
+import { useEffect, useMemo, useRef } from "react"
+import { MathUtils } from "three"
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 
-import { SCENE_MODEL } from "@/models/scene/scene.model"
+import { getSceneFocusFromPosition, SCENE_MODEL } from "@/models/scene/scene.model"
+import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import type { SceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
+
+import { SceneRoomView } from "./scene-room.view"
 
 type SceneExperienceViewProps = SceneViewModel
 
 export function SceneExperienceView({
+  modelScale,
+  position,
   rotationSpeed,
-  distort,
-  radius,
-  color,
-  metalness,
-  roughness,
   autoRotate,
-  showGrid,
+  useEnvironment,
   environmentPreset,
+  ambientIntensity,
+  directionalIntensity,
 }: SceneExperienceViewProps) {
-  const meshRef = useRef<Mesh>(null)
+  const controlsRef = useRef<OrbitControlsImpl>(null)
+  const hasAppliedInitialView = useRef(false)
+  const camera = useThree((state) => state.camera)
+  const controlMode = useSceneControlsStore((state) => state.controlMode)
+  const orbitEnabled = useSceneControlsStore((state) => state.orbitEnabled)
+  const focus = useMemo(() => getSceneFocusFromPosition(position), [position])
 
-  useLayoutEffect(() => {
-    const mesh = meshRef.current
-    if (!mesh) {
+  useEffect(() => {
+    const controls = controlsRef.current
+    if (!controls) {
       return
     }
 
-    mesh.scale.setScalar(0)
+    controls.enabled = controlMode === "orbit" && orbitEnabled
+  }, [controlMode, orbitEnabled])
 
-    gsap.to(mesh.scale, {
-      x: 1,
-      y: 1,
-      z: 1,
-      duration: SCENE_MODEL.animation.introDuration,
-      ease: SCENE_MODEL.animation.introEase,
-    })
-  }, [])
-
-  useFrame((_, delta) => {
-    if (!meshRef.current || !autoRotate) {
+  useEffect(() => {
+    const controls = controlsRef.current
+    if (!controls) {
       return
     }
 
-    meshRef.current.rotation.y += delta * rotationSpeed
-  })
+    controls.target.set(...focus.target)
+
+    if (!hasAppliedInitialView.current) {
+      const { initialOrbit, initialTarget } = SCENE_MODEL.controls
+
+      controls.target.set(...initialTarget)
+      controls.setAzimuthalAngle(MathUtils.degToRad(initialOrbit.azimuthDeg))
+      controls.setPolarAngle(MathUtils.degToRad(initialOrbit.polarDeg))
+
+      camera.position.set(...SCENE_MODEL.camera.initialPosition)
+      controls.update()
+
+      hasAppliedInitialView.current = true
+      return
+    }
+
+    controls.update()
+  }, [camera, focus.target])
+
+  useEffect(() => {
+    if (!hasAppliedInitialView.current) {
+      return
+    }
+
+    const controls = controlsRef.current
+    if (!controls) {
+      return
+    }
+
+    controls.target.set(...focus.target)
+    controls.update()
+  }, [focus.target])
 
   return (
     <>
       <PerspectiveCamera
         makeDefault
         fov={SCENE_MODEL.camera.fov}
-        position={[...SCENE_MODEL.camera.position]}
+        position={SCENE_MODEL.camera.initialPosition}
         near={SCENE_MODEL.camera.near}
         far={SCENE_MODEL.camera.far}
       />
 
-      <ambientLight intensity={SCENE_MODEL.lights.ambientIntensity} />
+      <ambientLight intensity={ambientIntensity} />
       <directionalLight
         position={[...SCENE_MODEL.lights.directionalPosition]}
-        intensity={SCENE_MODEL.lights.directionalIntensity}
+        intensity={directionalIntensity}
+        castShadow
       />
 
-      <Environment preset={environmentPreset} />
+      {useEnvironment ? <Environment preset={environmentPreset} /> : null}
 
-      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.35}>
-        <mesh ref={meshRef}>
-          <icosahedronGeometry args={[radius, 20]} />
-          <MeshDistortMaterial
-            color={color}
-            metalness={metalness}
-            roughness={roughness}
-            distort={distort}
-            speed={2}
-          />
-        </mesh>
-      </Float>
+      <SceneRoomView modelScale={modelScale} position={position} />
 
-      {showGrid ? (
-        <Grid
-          infiniteGrid
-          fadeDistance={28}
-          fadeStrength={1.2}
-          cellSize={0.6}
-          sectionSize={3}
-        />
-      ) : null}
+      <ContactShadows
+        opacity={0.35}
+        scale={20}
+        blur={2.5}
+        far={6}
+        position={[0, 0, 0]}
+      />
 
       <OrbitControls
+        ref={controlsRef}
+        makeDefault
+        enabled={controlMode === "orbit" && orbitEnabled}
         enableDamping
         dampingFactor={0.05}
-        minDistance={3}
-        maxDistance={12}
-        autoRotate={autoRotate}
+        minDistance={SCENE_MODEL.controls.minDistance}
+        maxDistance={SCENE_MODEL.controls.maxDistance}
+        maxPolarAngle={Math.PI / 2.05}
+        target={focus.target}
+        autoRotate={autoRotate && controlMode === "orbit"}
         autoRotateSpeed={rotationSpeed * 2}
       />
     </>

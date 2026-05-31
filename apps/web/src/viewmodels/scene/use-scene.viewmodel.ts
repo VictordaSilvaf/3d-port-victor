@@ -1,26 +1,26 @@
 import { useSceneStore } from "@/stores/scene/scene.store"
 
 export function useSceneViewModel() {
+  const modelScale = useSceneStore((state) => state.modelScale)
+  const position = useSceneStore((state) => state.position)
   const rotationSpeed = useSceneStore((state) => state.rotationSpeed)
-  const distort = useSceneStore((state) => state.distort)
-  const radius = useSceneStore((state) => state.radius)
-  const color = useSceneStore((state) => state.color)
-  const metalness = useSceneStore((state) => state.metalness)
-  const roughness = useSceneStore((state) => state.roughness)
   const autoRotate = useSceneStore((state) => state.autoRotate)
-  const showGrid = useSceneStore((state) => state.showGrid)
+  const useEnvironment = useSceneStore((state) => state.useEnvironment)
   const environmentPreset = useSceneStore((state) => state.environmentPreset)
+  const ambientIntensity = useSceneStore((state) => state.ambientIntensity)
+  const directionalIntensity = useSceneStore(
+    (state) => state.directionalIntensity
+  )
 
   return {
+    modelScale,
+    position,
     rotationSpeed,
-    distort,
-    radius,
-    color,
-    metalness,
-    roughness,
     autoRotate,
-    showGrid,
+    useEnvironment,
     environmentPreset,
+    ambientIntensity,
+    directionalIntensity,
   }
 }
 

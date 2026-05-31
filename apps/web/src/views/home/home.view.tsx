@@ -8,27 +8,25 @@ type HomeViewProps = HomeViewModel
 
 export function HomeView({ content, scene }: HomeViewProps) {
   return (
-    <div className="relative min-h-svh overflow-hidden">
-      <div className="fixed inset-0 z-0 bg-background">
-        <SceneCanvasView scene={scene} />
-      </div>
+    <div className="fixed inset-0 h-svh w-svw overflow-hidden">
+      <SceneCanvasView scene={scene} />
 
-      <div className="pointer-events-none relative z-10 flex min-h-svh p-6">
-        <div className="bg-background/75 supports-[backdrop-filter]:bg-background/55 pointer-events-auto flex max-w-md min-w-0 flex-col gap-4 rounded-3xl border border-border p-6 text-sm leading-loose shadow-lg backdrop-blur-md">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center p-4 sm:justify-end sm:p-6">
+        <div className="bg-background/70 supports-[backdrop-filter]:bg-background/45 pointer-events-auto flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-border/80 px-4 py-3 text-sm shadow-lg backdrop-blur-md sm:max-w-xs">
           <div>
-            <h1 className="text-lg font-semibold">{content.title}</h1>
-            {content.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="text-muted-foreground mt-2">
-                {paragraph}
-              </p>
-            ))}
-            <Button className="mt-4">{content.buttonLabel}</Button>
+            <h1 className="font-semibold">{content.title}</h1>
+            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+              {content.paragraphs[0]}
+            </p>
           </div>
-          <KeyboardHint
-            before={content.keyboardHint.before}
-            keys={[...content.keyboardHint.keys]}
-            after={content.keyboardHint.after}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Button size="sm">{content.buttonLabel}</Button>
+            <KeyboardHint
+              before={content.keyboardHint.before}
+              keys={[...content.keyboardHint.keys]}
+              after={content.keyboardHint.after}
+            />
+          </div>
         </div>
       </div>
     </div>
