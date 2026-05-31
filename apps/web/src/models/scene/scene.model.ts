@@ -88,7 +88,7 @@ export const SCENE_MODEL = {
     floorInset: 0.05,
     ceilingInset: 0.15,
     meshPadding: 0.05,
-    clusterCellSize: 0.25,
+    clusterCellSize: 1.25,
     minCellTriangleCount: 1,
     minComponentVolume: 0.0008,
     maxComponentVolumeRatio: 0.12,
