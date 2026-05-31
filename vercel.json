@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "installCommand": "npm install",
   "buildCommand": "turbo run build --filter=web",
   "devCommand": "turbo run dev --filter=web",
-  "installCommand": "npm install",
   "outputDirectory": "apps/web/dist",
-  "framework": "vite"
+  "framework": null
 }

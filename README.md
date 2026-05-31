@@ -80,10 +80,30 @@ Monorepo Turborepo com três apps Vite. O portfólio principal é `apps/web`.
 ### Opção A — Git Integration (recomendado)
 
 1. Acesse [vercel.com/new](https://vercel.com/new) e importe o repositório `VictordaSilvaf/3d-port-victor`.
-2. Deixe o **Root Directory** na raiz do repo (`.`).
-3. A Vercel usa o `vercel.json` da raiz:
-   - **Build:** `turbo run build --filter=web`
-   - **Output:** `apps/web/dist`
+2. Escolha **uma** configuração abaixo (não misture):
+
+**A1 — Root na raiz do monorepo (padrão)**
+
+| Campo | Valor |
+|---|---|
+| Root Directory | `.` (vazio) |
+| Output Directory | `apps/web/dist` |
+| Build Command | `turbo run build --filter=web` |
+
+Usa `vercel.json` na raiz.
+
+**A2 — Root em `apps/web`**
+
+| Campo | Valor |
+|---|---|
+| Root Directory | `apps/web` |
+| Output Directory | `dist` |
+| Build Command | `cd ../.. && turbo run build --filter=web` |
+| Install Command | `cd ../.. && npm install` |
+
+Usa `apps/web/vercel.json`.
+
+3. Em **Settings → Build & Deployment**, apague overrides errados (ex.: Output Directory = `dist` com root na raiz do repo).
 4. Cada push em `main` gera deploy de **production**; branches e PRs geram **preview**.
 
 Para `docs` ou `admin`, crie **projetos separados** na Vercel apontando para:
