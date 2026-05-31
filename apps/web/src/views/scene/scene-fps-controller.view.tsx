@@ -1,8 +1,9 @@
 import { useKeyboardControls } from "@react-three/drei"
 import { useFrame, useThree } from "@react-three/fiber"
-import { useEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 import { Euler, PerspectiveCamera } from "three"
 
+import { applyInitialSceneView } from "@/lib/scene/apply-initial-scene-view"
 import {
   syncLocomotionBaseFromCamera,
   updateFpsLocomotion,
@@ -45,6 +46,16 @@ export function SceneFpsControllerView() {
   const controlModeRef = useRef(useSceneControlsStore.getState().controlMode)
   const lookEnabledRef = useRef(useSceneControlsStore.getState().lookEnabled)
   const syncDebugFrame = useRef(0)
+  const hasSyncedInitialLook = useRef(false)
+
+  useLayoutEffect(() => {
+    if (hasSyncedInitialLook.current) {
+      return
+    }
+
+    applyInitialSceneView(camera)
+    hasSyncedInitialLook.current = true
+  }, [camera])
 
   useEffect(() => {
     return useSceneControlsStore.subscribe((state, previous) => {

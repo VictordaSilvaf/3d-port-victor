@@ -1,3 +1,5 @@
+import { MathUtils } from "three"
+
 import garageModelUrl from "@/assets/3d/rick_and_morty_garage_fan_art.glb"
 
 export const SCENE_MODEL = {
@@ -10,7 +12,11 @@ export const SCENE_MODEL = {
     offset: [4.48, -0.59, 1.75] as [number, number, number],
     /** Posição inicial exata (snapshot dev) */
     initialPosition: [
-      0.782113842736333, 1.5312709221255354, -1.6796664011900537,
+      0.19516170452021214, 1.311890773513988, -1.6078925819428276,
+    ] as [number, number, number],
+    /** Rotação inicial em graus (Euler YXZ: pitch, yaw, roll) */
+    initialRotationDeg: [
+      -2.195121951219506, 74.65322702859149, 0,
     ] as [number, number, number],
     near: 0.1,
     far: 200,
@@ -29,13 +35,13 @@ export const SCENE_MODEL = {
     targetOffset: [-0.03, -0.77, 0.16] as [number, number, number],
     /** Alvo da órbita no primeiro frame (snapshot dev) */
     initialTarget: [
-      -3.726595248555176, 1.3480738236796022, -3.2651796316542048,
+      -0.28665531254722915, 1.2927394066689704, -1.7401256610577016,
     ] as [number, number, number],
     /** Órbita inicial (snapshot dev) */
     initialOrbit: {
-      azimuthDeg: 70.62548577524738,
+      azimuthDeg: 74.65322702859144,
       polarDeg: 87.8048780487805,
-      distance: 4.782872677664605,
+      distance: 0.5,
     },
   },
   defaults: {
@@ -131,6 +137,33 @@ export type SceneDefaults = {
   environmentPreset: SceneEnvironmentPreset
   ambientIntensity: number
   directionalIntensity: number
+}
+
+export function getInitialLookAngles() {
+  const [pitchDeg, yawDeg] = SCENE_MODEL.camera.initialRotationDeg
+
+  return {
+    yaw: MathUtils.degToRad(yawDeg),
+    pitch: MathUtils.degToRad(pitchDeg),
+  }
+}
+
+export function getInitialCameraRig() {
+  const [pitchDeg, yawDeg, rollDeg] = SCENE_MODEL.camera.initialRotationDeg
+
+  return {
+    position: [...SCENE_MODEL.camera.initialPosition] as [
+      number,
+      number,
+      number,
+    ],
+    rotation: [
+      MathUtils.degToRad(pitchDeg),
+      MathUtils.degToRad(yawDeg),
+      MathUtils.degToRad(rollDeg),
+    ] as [number, number, number],
+    fov: SCENE_MODEL.camera.fov,
+  }
 }
 
 export function getSceneFocusFromPosition(

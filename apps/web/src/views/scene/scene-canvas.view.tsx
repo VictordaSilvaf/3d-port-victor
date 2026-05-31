@@ -2,7 +2,11 @@ import { Canvas } from "@react-three/fiber"
 import { KeyboardControls, Loader, type KeyboardControlsEntry } from "@react-three/drei"
 import { Suspense } from "react"
 
-import { SCENE_MODEL, type SceneMovementKey } from "@/models/scene/scene.model"
+import {
+  getInitialCameraRig,
+  SCENE_MODEL,
+  type SceneMovementKey,
+} from "@/models/scene/scene.model"
 import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import type { SceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
 
@@ -20,6 +24,8 @@ import { SceneViewportHostView } from "./scene-viewport-host.view"
 type SceneCanvasViewProps = {
   scene: SceneViewModel
 }
+
+const initialCameraRig = getInitialCameraRig()
 
 export function SceneCanvasView({ scene }: SceneCanvasViewProps) {
   const viewport = useSceneControlsStore((state) => state.viewportElement)
@@ -42,7 +48,13 @@ export function SceneCanvasView({ scene }: SceneCanvasViewProps) {
           dpr={[1, 2]}
           shadows
           gl={{ antialias: true, alpha: false }}
-          camera={{ fov: 50, near: 0.1, far: 200 }}
+          camera={{
+            fov: initialCameraRig.fov,
+            near: SCENE_MODEL.camera.near,
+            far: SCENE_MODEL.camera.far,
+            position: initialCameraRig.position,
+            rotation: initialCameraRig.rotation,
+          }}
         >
           <color attach="background" args={["#0a0a0b"]} />
           <Suspense fallback={null}>

@@ -1,7 +1,7 @@
 import { create } from "zustand"
 
 import { isMobileLayout } from "@/lib/scene/device"
-import { SCENE_MODEL } from "@/models/scene/scene.model"
+import { getInitialLookAngles, SCENE_MODEL } from "@/models/scene/scene.model"
 
 export type SceneControlMode = "orbit" | "look"
 
@@ -36,6 +36,7 @@ type SceneControlsState = {
 const pitchLimit = Math.PI / 2 - 0.05
 
 const initialMobileLayout = isMobileLayout()
+const initialLook = getInitialLookAngles()
 
 export const useSceneControlsStore = create<SceneControlsState>((set, get) => ({
   controlMode: initialMobileLayout ? "look" : "orbit",
@@ -45,8 +46,8 @@ export const useSceneControlsStore = create<SceneControlsState>((set, get) => ({
   orbitEnabled: true,
   pointerLocked: false,
   lookSensitivity: SCENE_MODEL.look.sensitivity,
-  lookYaw: 0,
-  lookPitch: 0,
+  lookYaw: initialLook.yaw,
+  lookPitch: initialLook.pitch,
   viewportElement: null,
   setControlMode: (controlMode) => set({ controlMode }),
   setIsMobileLayout: (isMobileLayout) => set({ isMobileLayout }),

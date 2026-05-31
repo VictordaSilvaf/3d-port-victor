@@ -5,18 +5,21 @@ import {
   PerspectiveCamera,
 } from "@react-three/drei"
 import { useThree } from "@react-three/fiber"
-import { useEffect, useMemo, useRef } from "react"
-import { MOUSE, MathUtils, type PerspectiveCamera as PerspectiveCameraImpl } from "three"
+import { useLayoutEffect, useRef } from "react"
+import { MOUSE, type PerspectiveCamera as PerspectiveCameraImpl } from "three"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 
+import { applyInitialSceneView } from "@/lib/scene/apply-initial-scene-view"
 import { syncLocomotionBaseFromCamera } from "@/lib/scene/camera-locomotion"
-import { getSceneFocusFromPosition, SCENE_MODEL } from "@/models/scene/scene.model"
+import { getInitialCameraRig, SCENE_MODEL } from "@/models/scene/scene.model"
 import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import type { SceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
 
 import { SceneRoomView } from "./scene-room.view"
 
 type SceneExperienceViewProps = SceneViewModel
+
+const initialCameraRig = getInitialCameraRig()
 
 export function SceneExperienceView({
   modelScale,
@@ -34,9 +37,18 @@ export function SceneExperienceView({
   const gl = useThree((state) => state.gl)
   const controlMode = useSceneControlsStore((state) => state.controlMode)
   const orbitEnabled = useSceneControlsStore((state) => state.orbitEnabled)
-  const focus = useMemo(() => getSceneFocusFromPosition(position), [position])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const controls = controlsRef.current
+    if (!controls || hasAppliedInitialView.current) {
+      return
+    }
+
+    applyInitialSceneView(camera, controls)
+    hasAppliedInitialView.current = true
+  }, [camera])
+
+  useLayoutEffect(() => {
     const controls = controlsRef.current
     if (!controls) {
       return
@@ -44,38 +56,6 @@ export function SceneExperienceView({
 
     controls.enabled = controlMode === "orbit" && orbitEnabled
   }, [controlMode, orbitEnabled])
-
-  useEffect(() => {
-    const controls = controlsRef.current
-    if (!controls || hasAppliedInitialView.current) {
-      return
-    }
-
-    const { initialOrbit, initialTarget } = SCENE_MODEL.controls
-
-    controls.target.set(...initialTarget)
-    controls.setAzimuthalAngle(MathUtils.degToRad(initialOrbit.azimuthDeg))
-    controls.setPolarAngle(MathUtils.degToRad(initialOrbit.polarDeg))
-    camera.position.set(...SCENE_MODEL.camera.initialPosition)
-    controls.update()
-
-    syncLocomotionBaseFromCamera(camera)
-    hasAppliedInitialView.current = true
-  }, [camera])
-
-  useEffect(() => {
-    if (!hasAppliedInitialView.current) {
-      return
-    }
-
-    const controls = controlsRef.current
-    if (!controls) {
-      return
-    }
-
-    controls.target.set(...focus.target)
-    controls.update()
-  }, [position, focus.target])
 
   const handleOrbitEnd = () => {
     syncLocomotionBaseFromCamera(camera)
@@ -85,6 +65,8 @@ export function SceneExperienceView({
     <>
       <PerspectiveCamera
         makeDefault
+        position={initialCameraRig.position}
+        rotation={initialCameraRig.rotation}
         fov={SCENE_MODEL.camera.fov}
         near={SCENE_MODEL.camera.near}
         far={SCENE_MODEL.camera.far}
@@ -113,6 +95,7 @@ export function SceneExperienceView({
         ref={controlsRef}
         makeDefault
         domElement={gl.domElement}
+        target={[...SCENE_MODEL.controls.initialTarget]}
         enabled={controlMode === "orbit" && orbitEnabled}
         enableDamping
         dampingFactor={0.05}

@@ -1,9 +1,12 @@
+import { getInitialLookAngles } from "@/models/scene/scene.model"
+
 const PITCH_LIMIT = Math.PI / 2 - 0.05
+const initialLook = getInitialLookAngles()
 
 /** Estado de olhar fora do React — evita re-render a cada movimento do mouse */
 export const lookInput = {
-  yaw: 0,
-  pitch: 0,
+  yaw: initialLook.yaw,
+  pitch: initialLook.pitch,
   mouseDeltaX: 0,
   mouseDeltaY: 0,
 }
