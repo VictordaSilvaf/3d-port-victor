@@ -6,7 +6,7 @@ import {
 } from "@react-three/drei"
 import { useThree } from "@react-three/fiber"
 import { useEffect, useMemo, useRef } from "react"
-import { MOUSE, MathUtils } from "three"
+import { MOUSE, MathUtils, type PerspectiveCamera as PerspectiveCameraImpl } from "three"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 
 import { syncLocomotionBaseFromCamera } from "@/lib/scene/camera-locomotion"
@@ -30,7 +30,7 @@ export function SceneExperienceView({
 }: SceneExperienceViewProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null)
   const hasAppliedInitialView = useRef(false)
-  const camera = useThree((state) => state.camera)
+  const camera = useThree((state) => state.camera as PerspectiveCameraImpl)
   const gl = useThree((state) => state.gl)
   const controlMode = useSceneControlsStore((state) => state.controlMode)
   const orbitEnabled = useSceneControlsStore((state) => state.orbitEnabled)
