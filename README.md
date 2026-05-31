@@ -72,3 +72,43 @@ npm run dev -- --filter=web
 import { Button } from "@workspace/ui/atoms/button"
 import { AppShell } from "@workspace/ui/organisms/app-shell"
 ```
+
+## Deploy na Vercel
+
+Monorepo Turborepo com três apps Vite. O portfólio principal é `apps/web`.
+
+### Opção A — Git Integration (recomendado)
+
+1. Acesse [vercel.com/new](https://vercel.com/new) e importe o repositório `VictordaSilvaf/3d-port-victor`.
+2. Deixe o **Root Directory** na raiz do repo (`.`).
+3. A Vercel usa o `vercel.json` da raiz:
+   - **Build:** `turbo run build --filter=web`
+   - **Output:** `apps/web/dist`
+4. Cada push em `main` gera deploy de **production**; branches e PRs geram **preview**.
+
+Para `docs` ou `admin`, crie **projetos separados** na Vercel apontando para:
+- Root Directory: `apps/docs` ou `apps/admin` (cada pasta já tem `vercel.json`).
+
+### Opção B — GitHub Actions (manual)
+
+O workflow `.github/workflows/deploy.yml` faz deploy via CLI (`vercel deploy --prebuilt --prod`).
+
+1. Instale a CLI e linke o projeto: `npx vercel link` (na raiz).
+2. Copie `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID` de `.vercel/project.json`.
+3. Crie um token em [vercel.com/account/tokens](https://vercel.com/account/tokens).
+4. Adicione secrets no GitHub (**Settings → Secrets → Actions**):
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+5. Rode **Actions → Deploy → Run workflow**.
+
+> Use **A ou B**, não os dois ao mesmo tempo, para evitar deploy duplicado.
+
+### CI (GitHub Actions)
+
+Em todo push/PR em `main`, o workflow `.github/workflows/ci.yml` roda:
+
+- `npm run typecheck`
+- `npm run lint`
+- `npm run build -- --filter=web`
+

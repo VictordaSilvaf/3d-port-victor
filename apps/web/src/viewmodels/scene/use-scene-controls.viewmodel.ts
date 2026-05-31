@@ -1,21 +1,11 @@
 import { useControls, button } from "leva"
 
 import type { SceneEnvironmentPreset } from "@/models/scene/scene.model"
+import { SCENE_ENVIRONMENT_PRESETS } from "@/models/scene/scene.model"
 import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import { useSceneStore } from "@/stores/scene/scene.store"
 
-const ENVIRONMENT_PRESETS: SceneEnvironmentPreset[] = [
-  "city",
-  "sunset",
-  "dawn",
-  "night",
-  "warehouse",
-  "forest",
-  "apartment",
-  "studio",
-  "park",
-  "lobby",
-]
+const ENVIRONMENT_PRESETS: SceneEnvironmentPreset[] = [...SCENE_ENVIRONMENT_PRESETS]
 
 export function useSceneControlsViewModel() {
   const modelScale = useSceneStore((state) => state.modelScale)

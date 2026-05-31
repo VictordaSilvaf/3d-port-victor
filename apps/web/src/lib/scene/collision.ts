@@ -10,7 +10,6 @@ export type SceneColliderBox = {
 
 const tempCenter = new Vector3()
 const tempClosest = new Vector3()
-const tempDelta = new Vector3()
 const testCenter = new Vector3()
 
 type ColliderReadyListener = () => void
@@ -63,7 +62,7 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function getBodyCenter(position: Vector3, target: Vector3) {
-  const { radius, bodyHeightOffset } = SCENE_MODEL.collision
+  const { bodyHeightOffset } = SCENE_MODEL.collision
   return target.set(
     position.x,
     position.y - bodyHeightOffset,

@@ -81,7 +81,7 @@ export function updateFpsLocomotion(
   const speed = locomotionState.velocity.length()
   const speedRatio = Math.min(speed / locomotion.maxSpeed, 1)
 
-  let bobY = 0
+  let bobY: number
   let bobX = 0
   let bobRoll = 0
 

@@ -1,8 +1,8 @@
 import { Canvas } from "@react-three/fiber"
-import { KeyboardControls, Loader } from "@react-three/drei"
+import { KeyboardControls, Loader, type KeyboardControlsEntry } from "@react-three/drei"
 import { Suspense } from "react"
 
-import { SCENE_MODEL } from "@/models/scene/scene.model"
+import { SCENE_MODEL, type SceneMovementKey } from "@/models/scene/scene.model"
 import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import type { SceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
 
@@ -24,7 +24,10 @@ export function SceneCanvasView({ scene }: SceneCanvasViewProps) {
 
   return (
     <KeyboardControls
-      map={[...SCENE_MODEL.movement.keyboardMap]}
+      map={
+        SCENE_MODEL.movement
+          .keyboardMap as unknown as KeyboardControlsEntry<SceneMovementKey>[]
+      }
       domElement={viewport ?? undefined}
     >
       <SceneViewportHostView>

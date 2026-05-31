@@ -4,8 +4,6 @@ import { buildMeshComponentColliders } from "@/lib/scene/mesh-component-collider
 import { colliderRegistry, setCollidersReady } from "@/lib/scene/collision"
 import { SCENE_MODEL } from "@/models/scene/scene.model"
 
-const tempSize = new Vector3()
-
 export function buildRoomColliders(room: Object3D) {
   const { collision } = SCENE_MODEL
 

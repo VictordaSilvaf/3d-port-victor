@@ -100,12 +100,33 @@ export const SCENE_MODEL = {
   },
 } as const
 
+export const SCENE_ENVIRONMENT_PRESETS = [
+  "city",
+  "sunset",
+  "dawn",
+  "night",
+  "warehouse",
+  "forest",
+  "apartment",
+  "studio",
+  "park",
+  "lobby",
+] as const
+
 export type SceneMovementKey = "forward" | "backward" | "left" | "right"
 
-export type SceneEnvironmentPreset =
-  (typeof SCENE_MODEL.defaults)["environmentPreset"]
+export type SceneEnvironmentPreset = (typeof SCENE_ENVIRONMENT_PRESETS)[number]
 
-export type SceneDefaults = typeof SCENE_MODEL.defaults
+export type SceneDefaults = {
+  modelScale: number
+  position: [number, number, number]
+  rotationSpeed: number
+  autoRotate: boolean
+  useEnvironment: boolean
+  environmentPreset: SceneEnvironmentPreset
+  ambientIntensity: number
+  directionalIntensity: number
+}
 
 export function getSceneFocusFromPosition(
   position: readonly [number, number, number]

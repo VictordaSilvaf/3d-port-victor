@@ -1,14 +1,17 @@
 import { useKeyboardControls } from "@react-three/drei"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
-import { Euler } from "three"
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
+import { Euler, PerspectiveCamera } from "three"
 
 import {
   initLocomotionBase,
   syncLocomotionBaseFromCamera,
   updateFpsLocomotion,
 } from "@/lib/scene/camera-locomotion"
+import {
+  getMovementInput,
+  idleMovementInput,
+} from "@/lib/scene/movement-input"
 import {
   applyMouseDelta,
   lookInput,
@@ -34,10 +37,7 @@ function isTypingInFormField() {
 }
 
 export function SceneFpsControllerView() {
-  const camera = useThree((state) => state.camera)
-  const controls = useThree(
-    (state) => state.controls as OrbitControlsImpl | undefined
-  )
+  const camera = useThree((state) => state.camera as PerspectiveCamera)
   const getKeys = useKeyboardControls()[1]
 
   const controlModeRef = useRef(useSceneControlsStore.getState().controlMode)
@@ -67,16 +67,12 @@ export function SceneFpsControllerView() {
       return
     }
 
-    if (controls) {
-      controls.enabled = false
-    }
-
     const { lookSensitivity } = useSceneControlsStore.getState()
     applyMouseDelta(lookSensitivity)
 
     const keys = isTypingInFormField()
-      ? { forward: false, backward: false, left: false, right: false }
-      : getKeys()
+      ? idleMovementInput
+      : getMovementInput(getKeys)
 
     updateFpsLocomotion(camera, keys, lookInput.yaw, lookInput.pitch, delta)
 
@@ -85,4 +81,6 @@ export function SceneFpsControllerView() {
       useSceneControlsStore.getState().setLookAngles(lookInput.yaw, lookInput.pitch)
     }
   }, -1)
+
+  return null
 }

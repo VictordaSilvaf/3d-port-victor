@@ -1,9 +1,14 @@
 import { useKeyboardControls } from "@react-three/drei"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
+import type { PerspectiveCamera } from "three"
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 
 import { updateOrbitLocomotion } from "@/lib/scene/camera-locomotion"
+import {
+  getMovementInput,
+  idleMovementInput,
+} from "@/lib/scene/movement-input"
 import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 
 function isTypingInFormField() {
@@ -24,7 +29,7 @@ function isTypingInFormField() {
 /** Movimento WASD no modo órbita com aceleração suave */
 export function SceneKeyboardMovementView() {
   const getKeys = useKeyboardControls()[1]
-  const camera = useThree((state) => state.camera)
+  const camera = useThree((state) => state.camera as PerspectiveCamera)
   const controls = useThree(
     (state) => state.controls as OrbitControlsImpl | undefined
   )
@@ -45,8 +50,8 @@ export function SceneKeyboardMovementView() {
     }
 
     const keys = isTypingInFormField()
-      ? { forward: false, backward: false, left: false, right: false }
-      : getKeys()
+      ? idleMovementInput
+      : getMovementInput(getKeys)
 
     updateOrbitLocomotion(camera, keys, delta, (moveDelta) => {
       if (controls && moveDelta.lengthSq() > 0) {
@@ -55,4 +60,6 @@ export function SceneKeyboardMovementView() {
       }
     })
   })
+
+  return null
 }

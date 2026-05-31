@@ -18,12 +18,12 @@ type SceneState = SceneDefaults & {
   reset: () => void
 }
 
-const initialState = SCENE_MODEL.defaults
+const initialState: SceneDefaults = { ...SCENE_MODEL.defaults }
 
 export const useSceneStore = create<SceneState>((set) => ({
   ...initialState,
   setModelScale: (modelScale) => set({ modelScale }),
-  setPosition: (position) => set({ position }),
+  setPosition: (position) => set({ position: [...position] }),
   setRotationSpeed: (rotationSpeed) => set({ rotationSpeed }),
   setAutoRotate: (autoRotate) => set({ autoRotate }),
   setUseEnvironment: (useEnvironment) => set({ useEnvironment }),
@@ -31,5 +31,5 @@ export const useSceneStore = create<SceneState>((set) => ({
   setAmbientIntensity: (ambientIntensity) => set({ ambientIntensity }),
   setDirectionalIntensity: (directionalIntensity) =>
     set({ directionalIntensity }),
-  reset: () => set(initialState),
+  reset: () => set({ ...initialState }),
 }))

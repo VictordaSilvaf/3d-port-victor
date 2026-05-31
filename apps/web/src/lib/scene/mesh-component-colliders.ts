@@ -16,7 +16,6 @@ export type MeshComponentCollider = {
   box: Box3
 }
 
-const tempPoint = new Vector3()
 const tempSize = new Vector3()
 
 const EXCLUDED_MESH_NAME_PARTS = [

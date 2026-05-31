@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "cd ../.. && turbo run build --filter=docs",
+  "devCommand": "cd ../.. && turbo run dev --filter=docs",
+  "installCommand": "cd ../.. && npm install",
+  "outputDirectory": "dist",
+  "framework": "vite"
+}
