@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react"
 import { Euler, PerspectiveCamera } from "three"
 
 import {
-  initLocomotionBase,
   syncLocomotionBaseFromCamera,
   updateFpsLocomotion,
 } from "@/lib/scene/camera-locomotion"
@@ -56,8 +55,8 @@ export function SceneFpsControllerView() {
         useSceneControlsStore.getState().setLookAngles(euler.y, euler.x)
       }
 
-      if (state.controlMode === "orbit" && previous.controlMode !== "look") {
-        initLocomotionBase(camera.position)
+      if (state.controlMode === "orbit" && previous.controlMode === "look") {
+        syncLocomotionBaseFromCamera(camera)
       }
     })
   }, [camera])

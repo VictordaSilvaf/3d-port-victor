@@ -128,6 +128,15 @@ export function updateOrbitLocomotion(
     initLocomotionBase(camera.position)
   }
 
+  const hasInput =
+    input.forward || input.backward || input.left || input.right
+
+  if (!hasInput) {
+    locomotionState.velocity.set(0, 0, 0)
+    locomotionState.basePosition.copy(camera.position)
+    return
+  }
+
   targetVelocity.set(0, 0, 0)
 
   if (input.forward || input.backward || input.left || input.right) {
@@ -170,10 +179,10 @@ export function updateOrbitLocomotion(
   )
 
   const moveDelta = locomotionState.basePosition.clone().sub(previousPosition)
-  camera.position.copy(locomotionState.basePosition)
 
-  if (onMoved && moveDelta.lengthSq() > 0) {
-    onMoved(moveDelta)
+  if (moveDelta.lengthSq() > 0) {
+    camera.position.copy(locomotionState.basePosition)
+    onMoved?.(moveDelta)
   }
 }
 

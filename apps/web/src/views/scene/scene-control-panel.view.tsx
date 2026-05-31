@@ -59,7 +59,7 @@ export function SceneControlPanelView() {
       <p className="text-muted-foreground bg-background/70 rounded-lg px-2 py-1 text-center text-[10px] backdrop-blur-sm">
         {controlMode === "look"
           ? "Clique na cena ou Capturar mouse · WASD move · Esc libera · L alterna"
-          : "Arraste orbitar · Scroll zoom · WASD move · L = modo olhar"}
+          : "Arraste (esq.) orbitar · Scroll zoom · WASD move · L = modo olhar"}
       </p>
     </div>
   )

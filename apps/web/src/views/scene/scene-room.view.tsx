@@ -5,7 +5,9 @@ import { Box3, Group, Vector3 } from "three"
 
 import { buildRoomColliders } from "@/lib/scene/build-room-colliders"
 import { clearRoomColliders } from "@/lib/scene/collision"
+import { setRoomPointerRaycast } from "@/lib/scene/room-pointer"
 import { SCENE_MODEL } from "@/models/scene/scene.model"
+import { useSceneControlsStore } from "@/stores/scene/scene-controls.store"
 import type { SceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
 
 type SceneRoomViewProps = Pick<
@@ -18,8 +20,13 @@ const tempCenter = new Vector3()
 
 export function SceneRoomView({ modelScale, position }: SceneRoomViewProps) {
   const groupRef = useRef<Group>(null)
+  const controlMode = useSceneControlsStore((state) => state.controlMode)
   const { scene } = useGLTF(SCENE_MODEL.asset.garageGlbUrl)
   const room = useMemo(() => scene.clone(true), [scene])
+
+  useLayoutEffect(() => {
+    setRoomPointerRaycast(room, controlMode !== "orbit")
+  }, [room, controlMode])
 
   useLayoutEffect(() => {
     const group = groupRef.current
