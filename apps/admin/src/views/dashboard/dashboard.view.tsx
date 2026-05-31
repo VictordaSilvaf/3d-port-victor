@@ -44,7 +44,7 @@ export function DashboardView({
       <div className="mt-8">
         <KeyboardHint
           before="(Press"
-          keys={["d"]}
+          keys={["p"]}
           after="to toggle dark mode)"
         />
       </div>

@@ -6,7 +6,7 @@ export const HOME_MODEL = {
   buttonLabel: "Ver projetos",
   keyboardHint: {
     before: "L alterna modo. Tema:",
-    keys: ["d"],
+    keys: ["p"],
     after: "",
   },
 } as const

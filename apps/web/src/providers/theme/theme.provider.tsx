@@ -8,6 +8,7 @@ import {
   getSystemTheme,
   isEditableTarget,
   isTheme,
+  THEME_TOGGLE_KEY,
   type Theme,
 } from "@/models/theme/theme.model"
 
@@ -122,7 +123,7 @@ export function ThemeProvider({
         return
       }
 
-      if (event.key.toLowerCase() !== "d") {
+      if (event.key.toLowerCase() !== THEME_TOGGLE_KEY) {
         return
       }
 
