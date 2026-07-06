@@ -1,38 +1,63 @@
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 
-import { isMobileLayout } from "@/lib/scene/device"
-import { HOME_MODEL } from "@/models/home/home.model"
-import { useSceneViewModel } from "@/viewmodels/scene/use-scene.viewmodel"
+import { pagesApi } from "@/lib/api/pages.api"
+import { projectsApi } from "@/lib/api/projects.api"
+import { resolveMediaUrl } from "@/lib/media"
+import { usePageMeta } from "@/lib/seo"
 
 export function useHomeViewModel() {
-  const scene = useSceneViewModel()
-  const [mobile, setMobile] = useState(isMobileLayout)
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    const coarseQuery = window.matchMedia("(pointer: coarse)")
-    const narrowQuery = window.matchMedia("(max-width: 768px)")
-    const syncLayout = () => setMobile(isMobileLayout())
+  const pageQuery = useQuery({
+    queryKey: ["pages", "home"],
+    queryFn: async () => (await pagesApi.home()).data,
+  })
 
-    syncLayout()
-    coarseQuery.addEventListener("change", syncLayout)
-    narrowQuery.addEventListener("change", syncLayout)
+  const featuredQuery = useQuery({
+    queryKey: ["projects", "featured"],
+    queryFn: async () =>
+      (
+        await projectsApi.list({
+          featured: true,
+          per_page: 6,
+          sort: "published_at",
+          direction: "desc",
+        })
+      ).data,
+  })
 
-    return () => {
-      coarseQuery.removeEventListener("change", syncLayout)
-      narrowQuery.removeEventListener("change", syncLayout)
-    }
-  }, [])
+  const recentQuery = useQuery({
+    queryKey: ["projects", "recent"],
+    queryFn: async () =>
+      (
+        await projectsApi.list({
+          per_page: 6,
+          sort: "updated_at",
+          direction: "desc",
+        })
+      ).data,
+  })
+
+  const page = pageQuery.data
+  usePageMeta(page)
+
+  const heroBlock = page?.blocks.find((b) => b.type === "hero")
+  const heroImage = heroBlock
+    ? resolveMediaUrl(
+        (heroBlock.payload.image_url as string) ??
+          (heroBlock.payload.image as string) ??
+          null
+      )
+    : null
 
   return {
-    content: {
-      ...HOME_MODEL,
-      paragraphs: mobile
-        ? [HOME_MODEL.mobileParagraph]
-        : [...HOME_MODEL.paragraphs],
-    },
-    isMobileLayout: mobile,
-    scene,
+    page,
+    isLoading: pageQuery.isLoading,
+    featured: featuredQuery.data ?? [],
+    recent: recentQuery.data ?? [],
+    heroImage,
+    goSearch: (q: string) => navigate(`/search?q=${encodeURIComponent(q)}`),
+    resolveMediaUrl,
   }
 }
-
-export type HomeViewModel = ReturnType<typeof useHomeViewModel>

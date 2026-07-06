@@ -1,35 +1,55 @@
-import { useCallback, useMemo, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 
-import {
-  DASHBOARD_MODEL,
-  type DashboardSectionId,
-} from "@/models/dashboard/dashboard.model"
+import { pagesApi } from "@/lib/api/pages.api"
+import { projectsApi } from "@/lib/api/projects.api"
+import { formatDate, formatNumber } from "@/models/admin/admin.model"
 
 export function useDashboardViewModel() {
-  const [activeSectionId, setActiveSectionId] = useState<DashboardSectionId>(
-    "overview"
-  )
+  const navigate = useNavigate()
 
-  const activeSection = useMemo(
-    () => DASHBOARD_MODEL.sections[activeSectionId],
-    [activeSectionId]
-  )
+  const statisticsQuery = useQuery({
+    queryKey: ["projects", "statistics"],
+    queryFn: () => projectsApi.statistics(),
+  })
 
-  const selectSection = useCallback((id: string) => {
-    if (id in DASHBOARD_MODEL.sections) {
-      setActiveSectionId(id as DashboardSectionId)
-    }
-  }, [])
+  const recentProjectsQuery = useQuery({
+    queryKey: ["projects", "recent"],
+    queryFn: () =>
+      projectsApi.list({
+        per_page: 5,
+        sort: "updated_at",
+        direction: "desc",
+      }),
+  })
+
+  const recentPagesQuery = useQuery({
+    queryKey: ["pages", "recent"],
+    queryFn: () => pagesApi.list({ per_page: 5 }),
+  })
+
+  const stats = statisticsQuery.data
+  const statCards = stats
+    ? [
+        { label: "Publicados", value: formatNumber(stats.published) },
+        { label: "Rascunhos", value: formatNumber(stats.draft) },
+        { label: "Arquivados", value: formatNumber(stats.archived) },
+        { label: "Visualizações", value: formatNumber(stats.views) },
+        { label: "Destaques", value: formatNumber(stats.featured) },
+      ]
+    : []
 
   return {
-    brand: DASHBOARD_MODEL.brand,
-    title: DASHBOARD_MODEL.title,
-    subtitle: DASHBOARD_MODEL.subtitle,
-    navItems: DASHBOARD_MODEL.navItems,
-    activeSectionId,
-    activeSection,
-    selectSection,
+    title: "Painel",
+    subtitle: "Visão geral do portfólio e conteúdo.",
+    statCards,
+    isLoadingStats: statisticsQuery.isLoading,
+    recentProjects: recentProjectsQuery.data?.data ?? [],
+    isLoadingProjects: recentProjectsQuery.isLoading,
+    recentPages: recentPagesQuery.data?.data ?? [],
+    isLoadingPages: recentPagesQuery.isLoading,
+    goToProject: (id: string) => navigate(`/projects/${id}`),
+    goToPage: (id: string) => navigate(`/pages/${id}`),
+    formatDate,
   }
 }
-
-export type DashboardViewModel = ReturnType<typeof useDashboardViewModel>

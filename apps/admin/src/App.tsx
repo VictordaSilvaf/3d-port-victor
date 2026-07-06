@@ -1,5 +1,5 @@
-import { DashboardPage } from "@/pages/dashboard/dashboard.page"
+import { AppRoutes } from "@/routes"
 
 export function App() {
-  return <DashboardPage />
+  return <AppRoutes />
 }

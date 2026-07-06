@@ -1,38 +1,89 @@
-import { Button } from "@workspace/ui/atoms/button"
-import { KeyboardHint } from "@workspace/ui/molecules/keyboard-hint"
+import { SearchIcon } from "lucide-react"
+import { useState } from "react"
 
-import type { HomeViewModel } from "@/viewmodels/home/use-home.viewmodel"
-import { SceneCanvasView } from "@/views/scene/scene-canvas.view"
+import { Input } from "@workspace/ui/atoms/input"
+import { Skeleton } from "@workspace/ui/atoms/skeleton"
+import { MediaCarousel } from "@workspace/ui/molecules/media-carousel"
+import { ProjectFeedCard } from "@workspace/ui/molecules/project-feed-card"
 
-type HomeViewProps = HomeViewModel
+import { BlockRenderer } from "@/views/blocks/block-renderer.view"
+import type { useHomeViewModel } from "@/viewmodels/home/use-home.viewmodel"
 
-export function HomeView({ content, scene, isMobileLayout }: HomeViewProps) {
+type HomeViewProps = ReturnType<typeof useHomeViewModel>
+
+export function HomeView({
+  page,
+  isLoading,
+  featured,
+  recent,
+  goSearch,
+  resolveMediaUrl,
+}: HomeViewProps) {
+  const [query, setQuery] = useState("")
+
+  if (isLoading) return <Skeleton className="h-96 w-full" />
+
   return (
-    <div className="fixed inset-0 h-svh w-svw overflow-hidden">
-      <SceneCanvasView scene={scene} />
+    <div className="space-y-8">
+      <header className="space-y-4">
+        <h1 className="text-2xl font-bold">{page?.title ?? "Feed"}</h1>
+        <form
+          className="relative"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (query.trim()) goSearch(query.trim())
+          }}
+        >
+          <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+          <Input
+            placeholder="Pesquisar projetos…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="border-white/20 bg-white/10 pl-10 text-white placeholder:text-white/50"
+          />
+        </form>
+      </header>
 
-      <div className="pointer-events-none absolute inset-x-0 top-[max(4.25rem,calc(env(safe-area-inset-top)+4.25rem))] z-10 flex justify-center p-3 sm:top-auto sm:bottom-0 sm:justify-end sm:p-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <div className="bg-background/70 supports-[backdrop-filter]:bg-background/45 pointer-events-auto flex w-full max-w-sm flex-col gap-2 rounded-xl border border-border/80 px-3 py-2.5 text-sm shadow-lg backdrop-blur-md sm:max-w-xs sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-3">
-          <div>
-            <h1 className="text-sm font-semibold sm:text-base">{content.title}</h1>
-            <p className="text-muted-foreground mt-1 text-[11px] leading-relaxed sm:text-xs">
-              {content.paragraphs[0]}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <Button size="sm" className="h-8 text-xs sm:h-9 sm:text-sm">
-              {content.buttonLabel}
-            </Button>
-            {!isMobileLayout ? (
-              <KeyboardHint
-                before={content.keyboardHint.before}
-                keys={[...content.keyboardHint.keys]}
-                after={content.keyboardHint.after}
+      {page?.blocks?.length ? (
+        <BlockRenderer blocks={page.blocks} projects={[...featured, ...recent]} />
+      ) : null}
+
+      {featured.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold">Destaques</h2>
+          <MediaCarousel>
+            {featured.map((p) => (
+              <ProjectFeedCard
+                key={p.id}
+                title={p.title}
+                href={`/projects/${p.slug}`}
+                description={p.description}
+                imageUrl={resolveMediaUrl(p.cover ?? p.thumbnail)}
+                featured={p.featured}
+                views={p.views}
               />
-            ) : null}
+            ))}
+          </MediaCarousel>
+        </section>
+      ) : null}
+
+      {recent.length > 0 ? (
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold">Projetos recentes</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {recent.map((p) => (
+              <ProjectFeedCard
+                key={p.id}
+                title={p.title}
+                href={`/projects/${p.slug}`}
+                description={p.description}
+                imageUrl={resolveMediaUrl(p.thumbnail ?? p.cover)}
+                views={p.views}
+              />
+            ))}
           </div>
-        </div>
-      </div>
+        </section>
+      ) : null}
     </div>
   )
 }
